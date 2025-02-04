@@ -1,0 +1,22 @@
+{
+  "name": "2---typescript",
+  "version": "1.0.0",
+  "description": "second course typescrpt",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "typescript"
+  ],
+  "author": "elias estrabao",
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^9.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@capacitor/camera": "^7.0.0"
+  }
+}

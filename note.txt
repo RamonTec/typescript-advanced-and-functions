@@ -1,0 +1,315 @@
+command -D is the same --save-dev
+
+es recomendable colocar los enum en mayuscula
+tambien dentro de enum definir en mayuscula sus propiedades
+
+Un enum es un tipo de dato que nos permite crear un set de opciones.
+entonces con ello nos sirve para documentar de cierta forma las librerias, funciones que hagamos
+
+Las tuplas o tuples nos permiten crear un array fuertemente tipado especificando el tipo de dato de cada elemento, así como una cantidad definida de elementos que podrá almacenar.
+
+Las tuplas no vienen en el conjunto de tipos de datos por defecto de JavaScript
+
+Tuplas en TypeScript
+Las definimos indicando entre [] el tipo de dato que cada elemento tendrá en la tupla.
+
+const user: [string, number] = ['nicobytes', 15];
+Al definir el tipado de cada uno también estamos definiendo la cantidad de valores que tendrá la tupla, por tanto, no podemos agregar más elementos.
+
+let user: [string, number];
+
+user = ['nico']; // Error: la tupla debe almacenar 2 valores (un `string` y un `number`)
+user = ['nico', true]; // Error: el segundo elemento de la tupla debe ser del tipo `number`
+user = ['nico', 20]; // Correcto: el primer elemento es del tipo `string` y el segundo de tipo `number`
+Desestructuración
+Podemos aplicar desestructuración para asignar a ciertas variables respectivamente los valores dentro de una tupla.
+
+const user: [string, number] = ['nicobytes', 15];
+const [username, age] = user;
+console.log(username); // nicobytes
+Nota
+Este tipo de desestructuración también lo podemos ver en el hook useState de la librería React.]
+sirve para limitar cada posicion de un array y verificar cada elemento y ver el tipo que se esta esperando
+
+El unknown type nos indica que una variable es de un tipo de dato desconocido. Es similar a any, pero sin quitar el análisis de código estático que nos brinda TypeScript.
+
+El tipo unknown nos fuerza a hacer una verificación de tipo. Esta es la forma que TypeScript sugiere trabajar con variables de las cuales no sabemos de qué tipo serán. Así evitamos utilizar constantemente any.
+
+Unknown type en TypeScript
+Usamos el keyword unknown para declarar una variable de este tipo.
+
+Unknown vs. Any
+Con any podemos hacer lo que queramos, no hay restricción alguna, pero con unknown vamos a tener advertencias al momento de utilizar alguna función o método con variables de este tipo.
+
+let unknownVar: unknown;
+
+unknownVar.toUpperCase(); // Nos marcará el editor una advertencia
+Por ejemplo, no podemos directamente aplicar un método propio de un string a una variable unknown. Para ello debemos realizar una verificación de tipo para asegurarnos que se ejecutará dicho método siempre cuando unknownVar sea del tipo string en algún punto del programa:
+
+let unknownVar: unknown;
+
+if (unknownVar === 'string') {
+	unknownVar.toUpperCase(); // Ahora ya no nos marcará como error.
+}
+Unknown en funciones
+También podemos emplear unknown en funciones si no sabemos exactamente que nos va a devolver.
+
+const parse = (str: string): unknown => {
+	return JSON.parse(str)
+}
+
+---
+El never type se usa para funciones que nunca van a terminar o que detienen el programa. Con esto TypeScript nos ayuda a detectarlos como por ejemplo un ciclo infinito cuando lanzamos un mensaje de error.
+
+Never type en funciones infinitas
+En el siguiente código, TypeScript infiere que el tipo es never, ya que su ejecución será infinita.
+
+const withoutEnd = () => {
+	while (true) {
+		console.log('Nunca parar de aprender');
+	}
+}
+Never vs. Void
+Las funciones del tipo void son aquellas que no retornan ningún dato, simplemente ejecutan las instrucciones dentro del bloque de la función. Por tanto, no debemos confundirlas con las de tipo never:
+
+const voidFunc = () => {
+  for(let i = 1; i <= 5; i++){
+    console.log(i)
+  }
+}
+
+voidFunc()
+
+/*
+// Función infinita y de tipo Never 👇
+const neverFunc = () => {
+	while (true) {
+		console.log('Nunca parar de aprender');
+	}
+}
+*/
+Never type en código con errores
+Una función también puede ser del tipo never cuando tenemos un throw que lance un error y, como resultado, haga detener la ejecución.
+
+const fail = (message: string) => { // TypeScript infiere que esta función se de tipo `never`
+  throw new Error(message)
+}
+
+const example = (input:unknown) => {
+  if(typeof input === 'string'){
+    return 'Es un string';
+  }
+  else if (Array.isArray(input)){
+    return 'Es un array';
+  }
+  return fail('Not Match'); // Lanzamos un error
+}
+
+console.log(example('Hola')) //'Es un string'
+console.log(example([1,1,1,1])) // 'Es un array'
+console.log(example(1212)) // error: Uncaught Error: Not Match
+console.log(example('Hola después del fail')) // NUNCA SE EJECUTA, porque se lanzó un error previamente
+
+omit and pick
+
+Los tipos Omit y Pick en TypeScript son utility types que te permiten crear un nuevo tipo basado en un tipo existente, 
+pero omitiendo o seleccionando algunas de las propiedades del tipo original.
+
+Los tipos Omit y Pick en TypeScript son utility types que te permiten crear un nuevo tipo basado en un tipo existente, 
+pero omitiendo o seleccionando algunas de las propiedades del tipo original.
+
+Omit en TypeScript
+Utilizamos la siguiente expresión para definir un Omit: Omit<T, K>. Con esto generamos un nuevo tipo que 
+tiene todas las propiedades de T excepto las especificadas en K. Veamos ejemplo en código:
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+}
+
+Usando `Omit` para omitir ciertas propiedades de la interfaz User
+type UserWithoutContact = Omit<User, 'email' | 'phoneNumber'>; // 👈 Nuevo tipo
+
+`UserWithoutContact` es ahora un tipo con las propiedades `id` y `name`, pero sin `email` ni `phoneNumber`.
+
+let user: UserWithoutContact = {
+  id: 1,
+  name: 'Carlos Araujo',
+};
+
+console.log(user); // { id: 1, name: 'Carlos Araujo' }
+
+En este caso, hemos usado Omit para excluir las propiedades email y phoneNumber de la interfaz User. 
+Por lo tanto, el nuevo tipo UserWithoutContact solo tiene las propiedades id y name.
+
+Pick en TypeScript
+Empleamos la siguiente expresión para definir un Pick: Pick<T, K>. Con esto producimos un nuevo tipo 
+que solo tiene las propiedades de T que se especifican en K. Veamos ejemplo en código:
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+}
+
+Usando `Pick` para seleccionar ciertas propiedades de User
+type UserContactInfo = Pick<User, 'email' | 'phoneNumber'>;
+
+`UserContactInfo` es ahora un tipo con solo las propiedades `email` y `phoneNumber`
+
+let contactInfo: UserContactInfo = {
+  email: "user@email.com",
+  phoneNumber: "653-951-802"
+};
+
+console.log(contactInfo); // { email: "user@email.com", phoneNumber: "653-951-802" }
+En este caso, hemos empleado Pick para seleccionar las propiedades email y phoneNumber de la interfaz User. 
+Por lo tanto, el nuevo tipo UserContactInfo solo tiene los atributos email y phoneNumber.
+
+------------------------------------------------------------------------------------------
+
+Sobre Partial y Required
+
+Los tipos Partial y Required en TypeScript son utility types que te permiten crear un nuevo tipo 
+basado en un tipo existente, pero haciendo que todas las propiedades de ese tipo sean opcionales u obligatorias.
+
+Partial type en TypeScript
+Utilizamos la siguiente expresión para definir un Partial type: Partial<T>. Esto genera un nuevo 
+tipo que tiene todas las propiedades de T, pero cada atributo es opcional. Veamos un ejemplo:
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+}
+
+// Usando `Partial` para hacer todas las propiedades de User opcionales
+type PartialUser = Partial<User>;
+
+// `PartialUser` es ahora un tipo con todas las propiedades de `User`, pero cada una de ellas es opcional.
+
+let partialUser: PartialUser = {
+  id: 1,
+  name: 'Benjamin Hernández',
+  // Podemos omitir `email` y `phoneNumber` ya que son opcionales en `PartialUser`
+};
+
+console.log(partialUser); // { id: 1, name: 'Benjamin Hernández' }
+Hemos usado Partial para hacer que todas las propiedades de User sean opcionales.
+Por lo tanto, el nuevo tipo PartialUser tiene las propiedades id, name, email y phoneNumber, pero todas ellas son opcionales.
+
+Required type en TypeScript
+Empleamos la siguiente expresión para definir un Required type: Required<T>. Esto genera un nuevo 
+tipo que tiene todas las propiedades de T, pero cada atributo es obligatoria. Veamos un ejemplo:
+
+interface User {
+  id: number;
+  name: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
+// Usando `Required` para hacer todas las propiedades de User obligatorias
+type RequiredUser = Required<User>;
+
+// `RequiredUser` es ahora un tipo con todas las propiedades de `User`, pero cada una de ellas es obligatoria.
+
+let requiredUser: RequiredUser = {
+  id: 1,
+  name: 'Fatima Fernández',
+  email: 'fatima@email.com',
+  phoneNumber: '343-545-789'
+  // No podemos omitir `email` y `phoneNumber` ya que son obligatorias en `RequiredUser`
+};
+
+console.log(requiredUser); // { id: 1, name: 'Fatima Fernández', email: 'fatima@email.com', phoneNumber: '343-545-789' }
+Hemos empleado Required para hacer que todas las propiedades de User sean obligatorias. 
+Por lo tanto, el nuevo tipo RequiredUser tiene las propiedades id, name, email y phoneNumber, pero todas ellas son obligatorias.
+
+------------------------------------------------------------------------------------------
+El tipo Readonly en TypeScript es un utility type que te permite crear un nuevo tipo basado en un otro existente, 
+pero haciendo que todas las propiedades de ese tipo sean de solo lectura.
+
+Readonly type en TypeScript
+Utilizamos la siguiente expresión para definir un Readonly type: Readonly<T>. Esto genera un nuevo tipo que tiene todas 
+las propiedades de T, pero cada propiedad es de solo lectura, lo que significa que una vez que se asigna un valor a la propiedad, 
+no puede ser cambiado. Veamos un ejemplo:
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+// Usando `Readonly` para hacer todas las propiedades de User de solo lectura
+type ReadonlyUser = Readonly<User>;
+
+// `ReadonlyUser` es ahora un tipo con todas las propiedades de `User`, pero cada una de ellas es de solo lectura.
+
+let readonlyUser: ReadonlyUser = {
+  id: 1,
+  name: 'Rosa López',
+  email: 'rosa@email.com'
+};
+
+console.log(readonlyUser); // { id: 1, name: 'Rosa López', email: 'rosa@email.com' }
+
+// Tratar de cambiar una propiedad lanzaría un error
+// readonlyUser.name = 'Jennifer Rodríguez'; // ⛔Error
+Hemos usado Readonly para hacer que todas las propiedades de User sean de solo lectura. 
+Por lo tanto, el nuevo tipo ReadonlyUser tiene las propiedades id, name y email, pero todas 
+ellas son de solo lectura y no pueden ser cambiadas después de la asignación inicial.
+
+-------------------------------------------------------------------
+acceder al tipo por indice
+Acceder al tipado por índice se hace de una manera muy similar a la cual accedemos a valores en arrays dentro de JavaScript, 
+pero en este caso, aplicado a una interface, enum, entre otros, para acceder al tipo de dato de una propiedad 
+y que dicho tipado sea asignado en otra parte del código.
+
+Acceso por índice en una interfaz en TypeScript
+Veamos un ejemplo de cómo podríamos acceder al tipado de la propiedad de una interfaz y utilizar este tipado en otra parte del código como en el parámetro en la definición de una función:
+
+interface Human {
+    id: string;
+    name: string;
+    age: number;
+    isAlien: boolean;
+}
+
+function createHuman(name: Human["name"]) {
+  // code
+}
+En este caso, el parámetro id en la función createHuman sería un string. La ventaja de esto es que si nosotros 
+cambiáramos el tipo de dato de id a number en la interfaz Human, automáticamente el tipo de dato del parámetro name de la función 
+createHuman sería number también, pues, el tipado se sincronizaría.
+
+-------------------------------------------------------------------
+
+En TypeScript, ReadonlyArray es un tipo que representa una versión de solo lectura de un array. 
+Esto quiere decir que una vez creado un ReadonlyArray, no puedes cambiar sus elementos o su longitud.
+
+Cómo usar ReadonlyArray en TypeScript
+La sintaxis para crear un ReadonlyArray en TypeScript es la siguiente:
+
+let nombreArray: ReadonlyArray<tipo> = [...];
+Donde tipo es el tipado de los elementos del array.
+
+Veamos cómo puedes utilizarlo con un ejemplo:
+
+let numbers: ReadonlyArray<number> = [30, 76, 21, 85, 42];
+
+console.log(numbers[3]); // ✅SÍ está permitido, imprime el valor 85
+console.log(numbers.length); // ✅SÍ está permitido, imprime 5 que es la longitud del array
+
+//numbers[0] = 10; // ⛔NO permitido porque se intenta modificar un valor en el array
+//numbers.push(6); // ⛔NO permitido porque se intenta agregar un nuevo elemento en el array y con ello aumentar su longitud
+El variable numbers es un array de números de solo lectura. Puedes leer los elementos del array y puedes consultar su longitud, 
+pero no puedes modificar los elementos ni cambiar la longitud de este. Si intentas hacerlo, TypeScript lanzará un error en tiempo de compilación.
+
+ReadonlyArray
+Este tipo de dato es un array, pero la principal diferencia con los arrays "normales" es 
+que no existen ninguno de los métodos de mutación, tales como pop, push, shift, etc.
